@@ -15,13 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Define a route for rendering the map page
 app.get('/', (req, res) => {
-  res.render('quiz');
-});
-
-app.post('/api/quiz/qustions', (req, res) =>{
-  api.quiz.questions((data)=>{
-    res.send(data);
-  })
+  res.render('index');
 });
 
 // Start the server
