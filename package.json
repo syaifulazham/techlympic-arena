@@ -1,11 +1,12 @@
 {
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "mysql": "^2.18.1"
   },
-  "scripts":{
-    "start":"node arena.js"
+  "scripts": {
+    "start": "node arena.js"
   }
 }

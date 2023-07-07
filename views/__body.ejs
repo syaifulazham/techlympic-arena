@@ -8,15 +8,19 @@
                 <div class="avatar-profile flex-column">
                     <div class="profile flex-column">
                         <small>Nama</small>
-                        <span>AZHAM</span>
+                        <span><%=user.data.name%></span>
+                    </div>
+                    <div class="profile flex-column">
+                        <small><%=(user.data.peringkat=='Rendah'?'Tahun':(user.data.peringkat=='Menengah'?'Tingkatan':''))%></small>
+                        <span><%=user.data.darjah_tingkatan%></span>
                     </div>
                     <div class="profile flex-column">
                         <small>Sekolah</small>
-                        <span>SEKOLAH KEBANGSAAN SIMPANG LIMA</span>
+                        <span><%=user.data.namasekolah%></span>
                     </div>
                     <div class="profile flex-column">
                         <small>Alamat</small>
-                        <span>7, JLN BESAR</span>
+                        <span><%=user.data.alamat%></span>
                     </div>
                 </div>
             </div>
