@@ -32,9 +32,13 @@ app.get('/', (req, res) => {
   try{
     //var sessionId = mysession(req.cookies['connect.sid']);
     var session = req.cookies['arenaId'];
-    console.log('my session :',session)
+    console.log('my session :',session.user.data.ic);
     if(session.user.authorized){
-      res.render('index.ejs', { user: session.user, page: '__body.ejs' });
+      var uid = session.user.data.ic;
+      api.user.competitions(uid, (comp)=>{
+        res.render('index.ejs', { user: session.user, competitions:comp, page: '__body.ejs' });
+      })
+      
     }else{
       res.render('index.ejs', { user: {}, page: 'login.ejs' });
     }

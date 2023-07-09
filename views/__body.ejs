@@ -1,7 +1,7 @@
 <div class="container-body">
     <div class="container-body-column">
         <div class="flex-column width-20pct">
-            <div class="avatar flex-row">
+            <div class="avatar flex-row anim-slide-in-top">
                 <div class="avatar-pic">
                     <img src="./img/picto-aer.png" alt="">
                 </div>
@@ -24,28 +24,50 @@
                     </div>
                 </div>
             </div>
-            <div class="menus flex-column">
+            <div class="menus flex-column anim-slide-in-top">
+                <div class="menu-header">
+                    Peringkat Negeri
+                </div>
+                <div class="menu-list flex-column">
+                    <%
+                    var theme = [
+                        ['Aeroangkasa','aer'],
+                        ['Kecerdasan Buatan dan Sains Data','kbs'],
+                        ['Inovasi, Kreativiti untuk Kesejahteraan Rakyat','ikr'],
+                        ['Teknologi Sohor','ts'],
+                        ['Keterangkuman Malaysia Madani','ktm'],
+                        ['Sains & Inovasi','sci']                    
+                    ];
+
+                    var getLogo = (th)=>{
+                        //console.log('SKAKJHKJAHKHAKJS: ',th,theme.filter(a=>a[0]==th));
+                        return theme.filter(a=>a[0]==th)[0][1];
+                    }
+                    %>
+                    <%competitions.filter(a=>a.peringkat==='Negeri').forEach(d=>{%>
+                        <div class="menu-item flex-row">
+                            <img src="./img/picto-<%=getLogo(d.theme)%>.png" alt="">
+                            <%=d.prog_name%>
+                        </div>
+                    <%})%>
+                </div>
+
                 <div class="menu-header">
                     Peringkat Sekolah
                 </div>
                 <div class="menu-list flex-column">
-                    <div class="menu-item flex-row">
-                        <img src="./img/picto-ts.png" alt="">
-                        5.2R Cabaran Kereta Lestari
-                    </div>
-                    <div class="menu-item flex-row selected">
-                        <img src="./img/picto-ts.png" alt="">
-                        5.3K Techlympics Quiz-A-Thon
-                    </div>
-                    <div class="menu-item flex-row">
-                        <img src="./img/picto-aer.png" alt="">
-                        2.1K Misi penerbangan dron
-                    </div>
+                    
+                    <%competitions.filter(a=>a.peringkat==='Sekolah').forEach(d=>{%>
+                        <div class="menu-item flex-row">
+                            <img src="./img/picto-<%=getLogo(d.theme)%>.png" alt="">
+                            <%=d.prog_name%>
+                        </div>
+                    <%})%>
                 </div>
             </div>
         </div>
-        <div class="main-container flex-column width-50pct flex-grow-2  scroll">
-            <div class="book flex-column">
+        <div class="main-container anim-slide-in-top flex-column width-50pct flex-grow-2  scroll">
+            <div class="book shadow flex-column">
                 <div class="book-header flex-row">
                     Teknologi Sohor | 5.3K Techlympics Quiz-A-Thon
                 </div>
@@ -92,14 +114,11 @@
             </div>
             <ul class="tree">
                 <li>
-                    Senarai Pertandingan Ditawarkan
+                    Rujukan
                     <ul class="tree">
-                        <li>Teknologi Sohor</li>
-                        <li>Inovasi Kreatif Untuk Kesejahteraan Rakyat</li>
-                        <li>Sains & Inovasi</li>
-                        <li>Aeroangkasa</li>
-                        <li>Kecerdasan Buatan & Sains Data</li>
-                        <li>Keterangkuman Malaysia Madani</li>
+                        <%theme.forEach(d=>{%>
+                        <li class="li-item"><img src="./img/picto-<%=d[1]%>.png" alt=""><%=d[0]%></li>    
+                        <%})%>
                     </ul>
                 </li>
             </ul>
