@@ -26,17 +26,20 @@
             </div>
             <div class="menus flex-column anim-slide-in-top">
                 <div class="menu-header">
+                    Pertandingan-pertandingan berikut telah didaftarkan untuk anda sertai
+                </div>
+                <div id="menu-header-negeri" class="menu-header aurora text-white shadow">
                     Peringkat Negeri
                 </div>
                 <div class="menu-list flex-column">
                     <%
                     var theme = [
-                        ['Aeroangkasa','aer'],
-                        ['Kecerdasan Buatan dan Sains Data','kbs'],
-                        ['Inovasi, Kreativiti untuk Kesejahteraan Rakyat','ikr'],
-                        ['Teknologi Sohor','ts'],
-                        ['Keterangkuman Malaysia Madani','ktm'],
-                        ['Sains & Inovasi','sci']                    
+                        ['Aeroangkasa','aer',''],
+                        ['Kecerdasan Buatan dan Sains Data','kbs','online'],
+                        ['Inovasi, Kreativiti untuk Kesejahteraan Rakyat','ikr','online'],
+                        ['Teknologi Sohor','ts','online'],
+                        ['Keterangkuman Malaysia Madani','ktm',''],
+                        ['Sains & Inovasi','sci','online']                    
                     ];
 
                     var getLogo = (th)=>{
@@ -45,20 +48,20 @@
                     }
                     %>
                     <%competitions.filter(a=>a.peringkat==='Negeri').forEach(d=>{%>
-                        <div class="menu-item flex-row">
+                        <div class="menu-item flex-row menu-negeri">
                             <img src="./img/picto-<%=getLogo(d.theme)%>.png" alt="">
                             <%=d.prog_name%>
                         </div>
                     <%})%>
                 </div>
 
-                <div class="menu-header">
+                <div id="menu-header-sekolah" class="menu-header aurora text-white shadow">
                     Peringkat Sekolah
                 </div>
                 <div class="menu-list flex-column">
                     
                     <%competitions.filter(a=>a.peringkat==='Sekolah').forEach(d=>{%>
-                        <div class="menu-item flex-row">
+                        <div class="menu-item flex-row menu-sekolah">
                             <img src="./img/picto-<%=getLogo(d.theme)%>.png" alt="">
                             <%=d.prog_name%>
                         </div>
@@ -67,6 +70,23 @@
             </div>
         </div>
         <div class="main-container anim-slide-in-top flex-column width-50pct flex-grow-2  scroll">
+            <div class="book aurora shadow flex-column text-white">
+                ARENA DALAM TALIAN | MALAYSIA TECHLYMPICS
+            </div>
+            <%competitions.filter(a=>a.prog_desc==='online').forEach(d=>{%>
+                <div class="book shadow flex-column book-<%=d.prog_code.replace('.','')%>">
+                    <div class="book-header flex-row" style="background-color: <%=d.color%>;">
+                        <%=d.theme%> | <%=d.prog_name%>
+                    </div>
+                    <div class="book-container">
+                        <div class="book-list flex-row">
+                            <div class="book-title">
+                                Nantikan arahan seterusnya untuk cabaran ini
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <%});%>
             <div class="book shadow flex-column">
                 <div class="book-header flex-row">
                     Teknologi Sohor | 5.3K Techlympics Quiz-A-Thon
@@ -109,20 +129,35 @@
             </div>
         </div>
         <div class="flex-column width-20pct">
+            <!--
             <div class="youtube">
-                <iframe width="100%" height="315" src="https://www.youtube.com/embed/AGKhWREcl-Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe width="100%" height="315" src="https://www.youtube.com/embed/AHY0bAL0_Uo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
-            <ul class="tree">
-                <li>
+            -->
+            <div class="menus flex-column anim-slide-in-top">
+                <div class="menu-header">
                     Rujukan
-                    <ul class="tree">
-                        <%theme.forEach(d=>{%>
-                        <li class="li-item"><img src="./img/picto-<%=d[1]%>.png" alt=""><%=d[0]%></li>    
-                        <%})%>
-                    </ul>
-                </li>
-            </ul>
+                </div>
+                <div class="menu-list flex-column">
+                    <%theme.forEach(d=>{%>
+                        <div class="menu-item flex-row">
+                            <img src="./img/picto-<%=d[1]%>.png" alt=""><%=d[0]%>
+                        </div>
+                    <%})%>
+                </div>
+            </div>
         </div>
     </div>
     
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+<script>
+    $('#menu-header-sekolah').on('click',()=>{
+        $('.menu-sekolah').toggleClass('hide');
+    });
+    $('#menu-header-negeri').on('click',()=>{
+        $('.menu-negeri').toggleClass('hide');
+    })
+</script>

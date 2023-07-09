@@ -55,7 +55,7 @@ let API = {
                 var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
 
                 var sqlstr = `
-                SELECT a.*,prog_code,theme, color, target_group
+                SELECT a.*,prog_code,theme, color, target_group, prog_desc
                 FROM (
                 SELECT * FROM(
                 SELECT kp, SUBSTRING_INDEX(SUBSTRING_INDEX(program, '|', n), '|', -1) AS prog_name, 'Sekolah' peringkat
