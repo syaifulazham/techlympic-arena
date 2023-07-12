@@ -3,7 +3,7 @@
         <div class="flex-column width-20pct">
             <div class="avatar flex-row anim-slide-in-top">
                 <div class="avatar-pic">
-                    <img src="./img/picto-aer.png" alt="">
+                    <img src="./img/avatar2.png" alt="">
                 </div>
                 <div class="avatar-profile flex-column">
                     <div class="profile flex-column">
@@ -78,6 +78,43 @@
                     <div class="book-header flex-row" style="background-color: <%=d.color%>;">
                         <%=d.theme%> | <%=d.prog_name%>
                     </div>
+                    <%if(d.prog_code==='5.3R'){%>
+                        <div class="book-container">
+                            <div class="book-list flex-row">
+                                <div class="tarikh">
+                                    05-07-2023
+                                </div>
+                                <div class="book-title">
+                                    Soalan Quiz Sekolah Rendah Set 1
+                                </div>
+                                <div class="status float-right">
+                                    00:15:32
+                                </div>
+                            </div>
+                            <div class="book-list flex-row">
+                                <div class="tarikh">
+                                    06-07-2023
+                                </div>
+                                <div class="book-title" onclick="window.open('http\://localhost:3050', '_blank');">
+                                    Soalan Quiz Sekolah Rendah Set 2
+                                </div>
+                                <div class="status float-right">
+                                    Belum
+                                </div>
+                            </div>
+                            <div class="book-list flex-row">
+                                <div class="tarikh">
+                                    07-07-2023
+                                </div>
+                                <div class="book-title">
+                                    Soalan Quiz Sekolah Rendah Set 3
+                                </div>
+                                <div class="status float-right">
+                                    Belum
+                                </div>
+                            </div>
+                        </div>
+                    <%}else{%>
                     <div class="book-container">
                         <div class="book-list flex-row">
                             <div class="book-title">
@@ -85,47 +122,14 @@
                             </div>
                         </div>
                     </div>
+                    <%}%>
                 </div>
             <%});%>
             <div class="book shadow flex-column">
                 <div class="book-header flex-row">
                     Teknologi Sohor | 5.3K Techlympics Quiz-A-Thon
                 </div>
-                <div class="book-container">
-                    <div class="book-list flex-row">
-                        <div class="tarikh">
-                            05-07-2023
-                        </div>
-                        <div class="book-title">
-                            Soalan Quiz Sekolah Rendah Set 1
-                        </div>
-                        <div class="status float-right">
-                            00:15:32
-                        </div>
-                    </div>
-                    <div class="book-list flex-row">
-                        <div class="tarikh">
-                            06-07-2023
-                        </div>
-                        <div class="book-title">
-                            Soalan Quiz Sekolah Rendah Set 2
-                        </div>
-                        <div class="status float-right">
-                            Belum
-                        </div>
-                    </div>
-                    <div class="book-list flex-row">
-                        <div class="tarikh">
-                            07-07-2023
-                        </div>
-                        <div class="book-title">
-                            Soalan Quiz Sekolah Rendah Set 3
-                        </div>
-                        <div class="status float-right">
-                            Belum
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
         <div class="flex-column width-20pct">
