@@ -1,0 +1,146 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../quiz.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="qid"></div>
+            </div>
+            <div class="theme-container">
+                <div class="timer">
+
+                </div>
+                <div class="theme"></div>
+                <div class="sub-theme"></div>
+            </div>
+            <div class="question">
+                <div class="text"></div>
+            </div>
+            <div class="answer flex-row"></div>
+            <div class="footer">
+                <div class="next">
+                    <div>SETERUSNYA</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arahan flex-column">
+            <div class="arahan-text">
+                <ul>
+                    <strong>QUIZ ini mengandungi 30 soalan umum, sila jawab kesemua soalan. pemenang akan ditentukan berdasarkan kepada:</strong>
+                    <li>
+                        Ketepatan Jawapan
+                    </li>
+                    <li>
+                        Kepantasan masa yang diambil
+                    </li>
+                </ul>
+                <span>**Pemasa akan tamat sebaik sahaja jawapan ke-30 dijawab</span>
+            </div>
+            <div class="button text-black" onclick="closeAndStart()">Saya faham dan Teruskan</div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script>
+            var api = {
+                quiz:{
+                    questions(q,fn){
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/quiz/questions',
+                            data: {qids:q},
+                            success: function (res) {
+                                fn(res);
+                            },
+                            dataType: 'json'
+                        });
+                    }
+                }
+            }
+        </script>
+
+        <script>
+            var closeAndStart=()=>{
+                $('.arahan').addClass('hide');
+                startTimer();
+            }
+
+            function startTimer() {
+                var timerElement = document.querySelector('.timer'); // Get the HTML element with the class 'timer'
+                var startTime = Date.now(); // Get the current timestamp in milliseconds
+
+                function updateTimer() {
+                    var currentTime = Date.now(); // Get the current timestamp in milliseconds
+                    var elapsedTime = currentTime - startTime; // Calculate the elapsed time in milliseconds
+
+                    // Convert elapsed time to minutes and seconds
+                    var minutes = Math.floor(elapsedTime / 60000);
+                    var seconds = Math.floor((elapsedTime % 60000) / 1000);
+
+                    // Display the timer as 'MM:SS' format
+                    timerElement.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+                }
+
+                // Update the timer every second (1000 milliseconds)
+                var intervalId = setInterval(updateTimer, 1000);
+
+                // Stop the timer after a certain duration (e.g., 10 minutes)
+                var duration = 10 * 60 * 1000; // 10 minutes in milliseconds
+                setTimeout(function() {
+                    clearInterval(intervalId); // Stop updating the timer
+                    timerElement.textContent = 'Timer Complete!'; // Display a completion message
+                }, duration);
+            }
+
+        </script>
+
+        <script>
+            var n = 0;
+
+            $(document).ready(()=>{
+                api.quiz.questions('<%=quiz.questions%>',data=>{
+                    console.table(data);
+
+                    renderQuestion(data);
+
+                    $('.next').on('click', ()=>{
+                        n++;
+                        renderQuestion(data);
+                    })
+                    //$('.answer').val(data[0].objective_options);
+                });
+            });
+
+
+            function renderQuestion(data){
+                if(n<data.length){
+                    $('.qid').text(n+1);
+                    $('.theme').text(data[n].theme);
+                    $('.sub-theme').text(data[n].sub_theme);
+                    $('.question > .text').text(data[n].question);
+
+                    var options = data[n].objective_options.split('|');
+
+                    $('.answer').find('.option').remove();
+                    options.forEach((d,i)=>{
+                        b = $('.answer').append('<div class="option option-' + i + '"><div>' + d + '</div></div>');
+                        $('.option-'+i).on('click',()=>{
+                            $('.option').removeClass('option-selected');
+                            $('.option-'+i).addClass('option-selected');
+                        })
+                    });
+                }else{
+                    $('.theme').text('');
+                    $('.sub-theme').text('');
+                    $('.question > .text').text('--TAMAT SOALAN--');
+                    $('.answer').find('.option').remove();
+                }
+            }
+        </script>
+
+    </body>
+</html>

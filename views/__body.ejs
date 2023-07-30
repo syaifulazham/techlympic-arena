@@ -75,46 +75,11 @@
             </div>
             <%competitions.filter(a=>a.prog_desc==='online').forEach(d=>{%>
                 <div class="book shadow flex-column book-<%=d.prog_code.replace('.','')%>">
-                    <div class="book-header flex-row" style="background-color: <%=d.color%>;">
+                    <div class="book-header flex-row" style="background-color:<%=d.color%>;">
                         <%=d.theme%> | <%=d.prog_name%>
                     </div>
-                    <%if(d.prog_code==='5.3R'){%>
-                        <div class="book-container">
-                            <div class="book-list flex-row">
-                                <div class="tarikh">
-                                    05-07-2023
-                                </div>
-                                <div class="book-title">
-                                    Soalan Quiz Sekolah Rendah Set 1
-                                </div>
-                                <div class="status float-right">
-                                    00:15:32
-                                </div>
-                            </div>
-                            <div class="book-list flex-row">
-                                <div class="tarikh">
-                                    06-07-2023
-                                </div>
-                                <div class="book-title" onclick="window.open('http\://localhost:3050', '_blank');">
-                                    Soalan Quiz Sekolah Rendah Set 2
-                                </div>
-                                <div class="status float-right">
-                                    Belum
-                                </div>
-                            </div>
-                            <div class="book-list flex-row">
-                                <div class="tarikh">
-                                    07-07-2023
-                                </div>
-                                <div class="book-title">
-                                    Soalan Quiz Sekolah Rendah Set 3
-                                </div>
-                                <div class="status float-right">
-                                    Belum
-                                </div>
-                            </div>
-                        </div>
-                    <%}else{%>
+                    <div class="book-container"></div>
+                    
                     <div class="book-container">
                         <div class="book-list flex-row">
                             <div class="book-title">
@@ -122,15 +87,16 @@
                             </div>
                         </div>
                     </div>
-                    <%}%>
+                    
                 </div>
             <%});%>
+            <!--
             <div class="book shadow flex-column">
                 <div class="book-header flex-row">
                     Teknologi Sohor | 5.3K Techlympics Quiz-A-Thon
                 </div>
                 
-            </div>
+            </div>-->
         </div>
         <div class="flex-column width-20pct">
             <!--
@@ -156,7 +122,85 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="./assets/d3.v7.min.js"></script>
 
+<script>
+
+    function getDateFormatted(dt) {
+        const currentDate = new Date(dt);
+        const year = currentDate.getFullYear();
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so we add 1 to get the correct month.
+
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
+    }
+
+    function redirectToNewTab(url) {
+        // Open the URL in a new tab
+        const newTab = window.open(url, '_blank');
+
+        // Make sure the new tab was successfully opened
+        if (newTab) {
+            // Focusing on the new tab (optional)
+            newTab.focus();
+        } else {
+            // If the new tab was blocked by the browser's pop-up blocker, 
+            // you can handle the situation here (e.g., display a message).
+            console.log('The new tab was blocked.');
+        }
+    }
+
+</script>
+
+<%competitions.filter(a=>a.prog_desc==='online').forEach(d=>{%>
+    <%if(d.prog_code==='5.3K' || d.prog_code==='5.3R' || d.prog_code==='5.3B'){%>
+        <script>
+            var loadQuiz = (peringkat, fn)=>{
+                $.ajax({
+                    type: "POST",
+                    url: '/api/quiz/list',
+                    data: {peringkat:peringkat},
+                    success: function (res) {
+                        fn(res);
+                    },
+                    dataType: 'json'
+                });
+            }
+            var loadQuestions = (q)=>{
+                $.ajax({
+                    type: "POST",
+                    url: '/quiz',
+                    data: {quiz:q},
+                    success: (msg)=>{
+
+                    }
+                });
+            }
+
+            $(document).ready(()=>{
+                loadQuiz('<%=user.data.peringkat%>',data=>{
+                    console.log(data);
+                    var sel = `.book-<%=d.prog_code.replace('.','')%> .book-container`;
+                    console.log(sel);
+                    var book = d3.select(sel);
+                    book.selectAll('*').remove();
+                    book.selectAll('.book-list').data(data).enter().append('div').call(o=>{
+                        o.attr('class','book-list flex-row');
+                        o.append('div').attr('class','tarikh').text(d=>getDateFormatted(d.datepublish));
+                        o.append('div').attr('class','book-title').text(d=>d.title);
+                        o.append('div').attr('class','status float-right').text('-');
+
+                        o.on('click', (e, d)=>{
+                            //loadQuestions(d);
+                            redirectToNewTab('/quiz/' + d.id);
+                        });
+                    });
+                })
+            });
+        </script>
+    <%}%>
+<%})%>
 <script>
     $('#menu-header-sekolah').on('click',()=>{
         $('.menu-sekolah').toggleClass('hide');

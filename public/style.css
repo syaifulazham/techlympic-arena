@@ -372,6 +372,11 @@ body {
     border-radius: 5px;
   }
 
+  .menu-list{
+    height: auto;
+    transition: height 0.5s ease-in-out;
+  }
+
   .menu-item{
     color: #333;
     padding: 5px;

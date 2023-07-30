@@ -13,6 +13,11 @@ let __DATA__SCHEMA__ = 'techlympic';
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+
 //set cookies
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -52,6 +57,22 @@ app.get('/', (req, res) => {
   //res.render('index');
 });
 
+app.get('/quiz/:id', (req, res)=>{
+  try{
+    var session = req.cookies['arenaId'];
+    var id = req.params.id;
+    
+    if(id!=='style.css'){
+      api.quiz.quiz(id, quiz=>{
+        res.render('quiz.ejs', {quiz:quiz[0]});
+      });
+    }
+
+  }catch(err){
+    console.log(err);
+  }
+});
+
 
 app.post('/api/user/login', (req, res)=>{
   try{
@@ -73,6 +94,21 @@ app.post('/api/user/login', (req, res)=>{
   }
 
 });
+
+app.post('/api/quiz/list', (req, res) =>{
+  var p = req.body.peringkat;
+  api.quiz.list(p, (result)=>{
+    res.send(result);
+  })
+});
+
+app.post('/api/quiz/questions', (req, res) =>{
+  var p = req.body.qids;
+  api.quiz.questionsSet(p, (result)=>{
+    res.send(result);
+  })
+});
+
 
 app.get('/logout', function (req, res, next) {
   res.clearCookie('arenaId');

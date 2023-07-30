@@ -104,6 +104,68 @@ let API = {
         }
 
     },
+    quiz:{
+        list(p, fn){
+            var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
+            try {
+                con.query(`
+                select * from quiz_sets where target_group = ? and ispublished = 1 order by updatedate
+            `, p,function (err, result) {
+                    if (err) {
+                        console.log('but with some error: ',err);
+                    } else {
+                        console.log('... with some data: ',result);
+                        con.end();
+                        
+                        fn(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        quiz(p, fn){
+            var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
+            try {
+                con.query(`
+                select * from quiz_sets where id = ?
+            `, p,function (err, result) {
+                    if (err) {
+                        console.log('but with some error: ',err);
+                    } else {
+                        console.log('... with some data: ',result);
+                        con.end();
+                        
+                        fn(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        questionsSet(series, fn){
+            if(series.length===0)
+                series='0';
+                
+            var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
+            try {
+                con.query(`
+                select * from quiz_collections where qid in(${series})
+              `, series.split(','), function (err, result) {
+                    if (err) {
+                        console.log('but with some error: ',err);
+                    } else {
+                        console.log('... with some data: ',result);
+                        con.end();
+                        
+                        fn(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+    }
 }
 
 module.exports = API;
