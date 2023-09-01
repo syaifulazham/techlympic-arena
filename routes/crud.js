@@ -14,7 +14,7 @@ let API = {
                 con.query("SELECT b.kodsekolah, b.namasekolah, b.peringkat, concat(alamat1,' ',alamat2,', ', poskod,' ', bandar,', ',negeri) alamat,a.* from peserta a left join user b using(usr_email) WHERE kp = ? and peserta_password = AES_ENCRYPT(?,CONCAT(kp,?))",[uid, pass, auth._SECRET_], 
                 function (err, result) {
                     console.log('result ====> ', result);
-                    if(result.length > 0){
+                    if(result){
                         var user = {
                             name: result[0].nama,
                             ic: result[0].kp,
