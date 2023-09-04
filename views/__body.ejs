@@ -178,6 +178,16 @@
                 });
             }
 
+            function renderMathWhiz(){
+                var sel = '.book-54R';
+                var url = 'https://app.cerebry.co/?auth_tok=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyNzg5NzQsInVzZXJuYW1lIjoiMDkwNTExMTAyOTkyIiwiZXhwIjoxNjkzODYyODk0LCJlbWFpbCI6IiIsIm9yaWdfaWF0IjoxNjkzODQ4NDk0LCJhdWQiOiJQeXRob25BcGkiLCJpc3MiOiJDZXJlYnJ5In0.mw0rudznxgB_YBoRApbJeL1FyJI2PZmFAFIwD32V0Sg&class_code=CAA0001';
+                console.log(sel);
+                var book = d3.select(sel);
+                book.selectAll('*').remove();
+                iframe = book.append('iframe').attr('style','height:600px');
+                iframe.attr('src',url)
+            }
+
             $(document).ready(()=>{
                 loadQuiz('<%=user.data.peringkat%>',data=>{
                     console.log(data);
@@ -196,7 +206,10 @@
                             redirectToNewTab('/quiz/' + d.id);
                         });
                     });
-                })
+                });
+
+                renderMathWhiz();
+
             });
         </script>
     <%}%>
