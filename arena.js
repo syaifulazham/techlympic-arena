@@ -5,9 +5,34 @@ const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
 
+const axios = require('axios');
+
+const auth = require("./routes/auth")
 const api = require("./routes/crud");
 
 let __DATA__SCHEMA__ = 'techlympic';
+
+const url = 'https://staging.sparkbackend.cerebry.co';
+const headers = {
+  'Content-Type': 'application/json',
+  'jwt-token': auth._CEREBRY_
+};
+
+async function requestToken(kp) {
+  // Define the API URL and request data
+  const apiUrl = `${url}/api/v11/partner/user/${kp}/token/`;
+
+  try {
+    // Make the POST request
+    const response = await axios.get(apiUrl, { headers });
+
+    return response.data;
+  } catch (error) {
+    // Handle any errors that occurred during the request
+    console.error('Error calling API:', error.message);
+    throw error; // You can choose to throw the error or handle it differently
+  }
+}
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -41,7 +66,13 @@ app.get('/', (req, res) => {
     if(session.user.authorized){
       var uid = session.user.data.ic;
       api.user.competitions(uid, (comp)=>{
-        res.render('index.ejs', { user: session.user, competitions:comp, page: '__body.ejs' });
+        requestToken(uid).then(data=>{
+          //console.log('THE TOKEN=========>>>',data.token);
+          res.render('index.ejs', { user: session.user, competitions:comp, page: '__body.ejs',token:data.token });
+        }).catch(err=>{
+          res.render('index.ejs', { user: session.user, competitions:comp, page: '__body.ejs',token:'' });
+        })
+        
       })
       
     }else{

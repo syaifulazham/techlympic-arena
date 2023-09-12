@@ -58,6 +58,7 @@
                 <div id="menu-header-sekolah" class="menu-header aurora text-white shadow">
                     Peringkat Sekolah
                 </div>
+
                 <div class="menu-list flex-column">
                     
                     <%competitions.filter(a=>a.peringkat==='Sekolah').forEach(d=>{%>
@@ -67,6 +68,7 @@
                         </div>
                     <%})%>
                 </div>
+                
             </div>
         </div>
         <div class="main-container anim-slide-in-top flex-column width-50pct flex-grow-2  scroll">
@@ -180,7 +182,7 @@
 
             function renderMathWhiz(){
                 var sel = '.book-54R';
-                var url = 'https://app.cerebry.co/?auth_tok=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyNzg5NzQsInVzZXJuYW1lIjoiMDkwNTExMTAyOTkyIiwiZXhwIjoxNjk0MTc0MzY2LCJlbWFpbCI6IiIsIm9yaWdfaWF0IjoxNjk0MTU5OTY2LCJhdWQiOiJQeXRob25BcGkiLCJpc3MiOiJDZXJlYnJ5In0.BhPZ-rdgSI1sO8lM1hRyjvhHEJy_AaxF1TjLkCA_km8';
+                var url = 'https://competition.cerebry.co/?auth_tok=<%=token%>&class_code=<%=user.data.kodsekolah%>-<%=user.data.grade%>';
                 console.log(sel);
                 var book = d3.select(sel);
                 book.selectAll('*').remove();
@@ -192,7 +194,7 @@
                 loadQuiz('<%=user.data.peringkat%>',data=>{
                     console.log(data);
                     var sel = `.book-<%=d.prog_code.replace('.','')%> .book-container`;
-                    console.log(sel);
+                    console.log('SEL=======>',sel);
                     var book = d3.select(sel);
                     book.selectAll('*').remove();
                     book.selectAll('.book-list').data(data).enter().append('div').call(o=>{
@@ -208,9 +210,34 @@
                     });
                 });
 
-                renderMathWhiz();
+                //renderMathWhiz();
 
             });
+        </script>
+    <%}%> <!--if 5.3R-->
+    <%if(d.prog_code==='5.4R'){%>
+        <script>
+            var data =[
+                {
+                    datepublish:'',
+                    title:'Klik ke antara muka MathWhiz'
+                }
+            ]
+                    var sel = `.book-<%=d.prog_code.replace('.','')%> .book-container`;
+                    console.log('SEL=======>',sel);
+                    var book = d3.select(sel);
+                    book.selectAll('*').remove();
+                    book.selectAll('.book-list').data(data).enter().append('div').call(o=>{
+                        o.attr('class','book-list flex-row');
+                        o.append('div').attr('class','tarikh').text(getDateFormatted(new Date()));
+                        o.append('div').attr('class','book-title').text(d=>d.title);
+                        o.append('div').attr('class','status float-right').text('-');
+
+                        o.on('click', (e, d)=>{
+                            //loadQuestions(d);
+                            redirectToNewTab('https://competition.cerebry.co/?auth_tok=<%=token%>&class_code=<%=user.data.kodsekolah%>-<%=user.data.grade%>');
+                        });
+                    });
         </script>
     <%}%>
 <%})%>
