@@ -116,7 +116,7 @@ let API = {
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
                 con.query(`
-                select * from quiz_sets where target_group = ? and ispublished = 1 order by updatedate
+                select sha(concat(id,'${auth._SECRET_}')) idx,a.* from quiz_sets a where target_group = ? and ispublished = 1 order by updatedate
             `, p,function (err, result) {
                     if (err) {
                         console.log('but with some error: ',err);
@@ -135,7 +135,7 @@ let API = {
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
                 con.query(`
-                select * from quiz_sets where id = ?
+                select * from quiz_sets where sha(concat(id,'${auth._SECRET_}')) = ?
             `, p,function (err, result) {
                     if (err) {
                         console.log('but with some error: ',err);
@@ -157,7 +157,7 @@ let API = {
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
                 con.query(`
-                select * from quiz_collections where qid in(${series})
+                select qid,theme,sub_theme,question,objective_options from quiz_collections where qid in(${series})
               `, series.split(','), function (err, result) {
                     if (err) {
                         console.log('but with some error: ',err);

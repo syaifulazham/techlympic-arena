@@ -105,6 +105,24 @@ app.get('/quiz/:id', (req, res)=>{
 });
 
 
+app.get('/math-whiz', (req, res)=>{
+  try{
+    var session = req.cookies['arenaId'];
+    var uid = session.user.data.ic;
+    if(uid!=='style.css'){
+      requestToken(uid).then(data=>{
+        //console.log('THE TOKEN=========>>>',data.token);
+        res.render('math.ejs', { user: session.user, token:data.token });
+      }).catch(err=>{
+        console.log(err);
+      })
+    }
+
+  }catch(err){
+    console.log(err);
+  }
+});
+
 app.post('/api/user/login', (req, res)=>{
   try{
     uid = req.body.uid;

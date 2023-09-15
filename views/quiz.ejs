@@ -29,15 +29,18 @@
         <div class="arahan flex-column">
             <div class="arahan-text">
                 <ul>
-                    <strong>QUIZ ini mengandungi 30 soalan umum, sila jawab kesemua soalan. pemenang akan ditentukan berdasarkan kepada:</strong>
+                    <strong><%=quiz.title%></strong>
                     <li>
-                        Ketepatan Jawapan
+                        <%=quiz.instructions%>
                     </li>
                     <li>
-                        Kepantasan masa yang diambil
+                        Keputusan akan dinilai berdasarkan jawapan yang tepat dan kepantasan masa yang dicatatkan
+                    </li>
+                    <li>
+                        Pemasa (Timer) akan bermula sebaik sahaja klik pada butang 'Saya faham dan Teruskan' di bawah
                     </li>
                 </ul>
-                <span>**Pemasa akan tamat sebaik sahaja jawapan ke-30 dijawab</span>
+                <span>**Pemasa akan tamat sebaik sahaja jawapan ke-<%=quiz.questions.split(',').length%> dijawab</span>
             </div>
             <div class="button text-black" onclick="closeAndStart()">Saya faham dan Teruskan</div>
         </div>
@@ -89,10 +92,10 @@
                 var intervalId = setInterval(updateTimer, 1000);
 
                 // Stop the timer after a certain duration (e.g., 10 minutes)
-                var duration = 10 * 60 * 1000; // 10 minutes in milliseconds
+                var duration = 120 * 60 * 1000; // 10 minutes in milliseconds 10 * 60 * 1000;
                 setTimeout(function() {
                     clearInterval(intervalId); // Stop updating the timer
-                    timerElement.textContent = 'Timer Complete!'; // Display a completion message
+                    //timerElement.textContent = 'Timer Complete!'; // Display a completion message
                 }, duration);
             }
 
@@ -117,6 +120,7 @@
 
 
             function renderQuestion(data){
+                console.log(data);
                 if(n<data.length){
                     $('.qid').text(n+1);
                     $('.theme').text(data[n].theme);

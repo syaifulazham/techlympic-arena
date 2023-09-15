@@ -180,16 +180,6 @@
                 });
             }
 
-            function renderMathWhiz(){
-                var sel = '.book-54R';
-                var url = 'https://competition.cerebry.co/?auth_tok=<%=token%>&class_code=<%=user.data.kodsekolah%>-<%=user.data.grade%>';
-                console.log(sel);
-                var book = d3.select(sel);
-                book.selectAll('*').remove();
-                iframe = book.append('iframe').attr('style','height:600px');
-                iframe.attr('src',url)
-            }
-
             $(document).ready(()=>{
                 loadQuiz('<%=user.data.peringkat%>',data=>{
                     console.log(data);
@@ -205,7 +195,7 @@
 
                         o.on('click', (e, d)=>{
                             //loadQuestions(d);
-                            redirectToNewTab('/quiz/' + d.id);
+                            redirectToNewTab('/quiz/' + d.idx);
                         });
                     });
                 });
@@ -235,7 +225,7 @@
 
                         o.on('click', (e, d)=>{
                             //loadQuestions(d);
-                            redirectToNewTab('https://competition.cerebry.co/?auth_tok=<%=token%>&class_code=<%=user.data.kodsekolah%>-<%=user.data.grade%>');
+                            redirectToNewTab('/math-whiz');
                         });
                     });
         </script>
