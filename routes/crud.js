@@ -134,8 +134,9 @@ let API = {
         quiz(p, kp, fn){
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
+                //timestamp(CONVERT_TZ(b.createdate, 'America/New_York', 'Asia/Kuala_Lumpur'))
                 con.query(`
-                    SELECT kp,a.*,markah,timetaken,timestamp(CONVERT_TZ(b.createdate, 'America/New_York', 'Asia/Kuala_Lumpur')) lastupdate, ifnull(b.last_index,-1) last_index 
+                    SELECT kp,a.*,markah,timetaken,b.createdate lastupdate, ifnull(b.last_index,-1) last_index 
                     FROM quiz_sets a 
                     LEFT JOIN ( SELECT * from quiz_answer WHERE kp = ?) b ON a.id = b.quizid
                     where sha(concat(id,'${auth._SECRET_}')) = ?
