@@ -72,6 +72,28 @@
                             },
                             dataType: 'json'
                         });
+                    },
+                    complete(ans, fn){
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/quiz/complete',
+                            data: {answered: ans},
+                            success: function (res) {
+                                fn(res);
+                            },
+                            dataType: 'json'
+                        });
+                    },
+                    result(ans, fn){
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/quiz/complete-result',
+                            data: {answered: ans},
+                            success: function (res) {
+                                fn(res);
+                            },
+                            dataType: 'json'
+                        });
                     }
                 }
             }
@@ -80,11 +102,14 @@
         <script>
             var closeAndStart=()=>{
                 $('.arahan').addClass('hide');
-                startTimer();
+                var mysqlTimestamp = '<%=quiz.lastupdate%>';
+                var timestampMilliseconds = Date.parse(mysqlTimestamp);
+                console.log('timestampMilliseconds--->>>',mysqlTimestamp,timestampMilliseconds);
+
+                startTimer(timestampMilliseconds);
 
                 var ans = {
-                    quizid: <%=quiz.id%>,
-                    kp: '<%=user.data.ic%>',
+                    quizid: '<%=quiz.id%>'*1,
                     answer: ''
                 }
 
@@ -93,27 +118,28 @@
                 })
             }
 
-            function startTimer() {
+            function startTimer(initialStartTime) {
                 var timerElement = document.querySelector('.timer'); // Get the HTML element with the class 'timer'
-                var startTime = Date.now(); // Get the current timestamp in milliseconds
+                var startTime = initialStartTime || Date.now(); // Use the provided start time or get the current timestamp in milliseconds
 
                 function updateTimer() {
                     var currentTime = Date.now(); // Get the current timestamp in milliseconds
                     var elapsedTime = currentTime - startTime; // Calculate the elapsed time in milliseconds
 
-                    // Convert elapsed time to minutes and seconds
-                    var minutes = Math.floor(elapsedTime / 60000);
+                    // Convert elapsed time to hours, minutes, and seconds
+                    var hours = Math.floor(elapsedTime / 3600000);
+                    var minutes = Math.floor((elapsedTime % 3600000) / 60000);
                     var seconds = Math.floor((elapsedTime % 60000) / 1000);
 
-                    // Display the timer as 'MM:SS' format
-                    timerElement.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+                    // Display the timer as 'HH:MM:SS' format
+                    timerElement.textContent = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
                 }
 
                 // Update the timer every second (1000 milliseconds)
                 var intervalId = setInterval(updateTimer, 1000);
 
                 // Stop the timer after a certain duration (e.g., 10 minutes)
-                var duration = 120 * 60 * 1000; // 10 minutes in milliseconds 10 * 60 * 1000;
+                var duration = 10 * 60 * 1000; // 10 minutes in milliseconds
                 setTimeout(function() {
                     clearInterval(intervalId); // Stop updating the timer
                     //timerElement.textContent = 'Timer Complete!'; // Display a completion message
@@ -123,7 +149,7 @@
         </script>
 
         <script>
-            var n = 0;
+            var n = '<%=quiz.last_index+1%>'*1;
 
             $(document).ready(()=>{
                 api.quiz.questions('<%=quiz.questions%>',data=>{
@@ -138,8 +164,8 @@
 
                         var ans = {
                             quizid: <%=quiz.id%>,
-                            kp: '<%=user.data.ic%>',
-                            answer: jawapan
+                            answer: jawapan,
+                            lastindex: n
                         }
 
                         api.quiz.answer(ans, d=>{
@@ -174,9 +200,31 @@
                 }else{
                     $('.theme').text('');
                     $('.sub-theme').text('');
-                    $('.question > .text').text('--TAMAT SOALAN--');
+                    //$('.question > .text').text('--TAMAT SOALAN--');
                     $('.answer').find('.option').remove();
-                    window.close()
+                    $('.timer').remove();
+                    //window.close()
+                    var ans = {
+                        quizid: '<%=quiz.id%>',
+                        size: '<%=quiz.questions.split(",").length%>'
+                    }
+
+                    api.quiz.complete(ans, d=>{
+                        api.quiz.result(ans, keputusan=>{
+                            console.log('KEPUTUSAN====>>>>',keputusan)
+                            $('.question > .text').text('TAHNIAH, ANDA TELAH MENJAWAB SEMUA SOALAN');
+                            res = d3.select('.question');
+
+                            pnl = res.append('div').attr('class','flex-column center').attr('style','width:80vw;min-height:250px;background-color:#fff;border:1px solid #454545;border-radius:5px');
+                            markah = pnl.append('div').attr('class','flex-column');
+                            markah.append('div').text('Markah');
+                            markah.append('div').attr('style','font-weight:bold;font-size:x-large;color:#080;margin-bottom:20px').text(keputusan[0].markah);
+                            
+                            masa = pnl.append('div').attr('class','flex-column');
+                            masa.append('div').text('Catatan Masa');
+                            masa.append('div').attr('style','font-weight:bold;font-size:x-large;color:#080').html((keputusan[0].hours>0?keputusan[0].hours+'<span style="font-size:60%;color:#585858">jam</span> ':'') + (keputusan[0].minutes>0?keputusan[0].minutes+'<span style="font-size:60%;color:#585858">minit</span> ':'') + keputusan[0].seconds+'<span style="font-size:60%;color:#585858">saat</span> ');
+                        })
+                    });
                 }
             }
         </script>

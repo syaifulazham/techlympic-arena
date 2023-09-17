@@ -131,12 +131,15 @@ let API = {
                 console.log(e);
             }
         },
-        quiz(p, fn){
+        quiz(p, kp, fn){
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
                 con.query(`
-                select * from quiz_sets where sha(concat(id,'${auth._SECRET_}')) = ?
-            `, p,function (err, result) {
+                    SELECT kp,a.*,markah,timetaken,timestamp(CONVERT_TZ(b.createdate, 'America/New_York', 'Asia/Kuala_Lumpur')) lastupdate, ifnull(b.last_index,-1) last_index 
+                    FROM quiz_sets a 
+                    LEFT JOIN ( SELECT * from quiz_answer WHERE kp = ?) b ON a.id = b.quizid
+                    where sha(concat(id,'${auth._SECRET_}')) = ?
+            `,[kp, p],function (err, result) {
                     if (err) {
                         console.log('but with some error: ',err);
                     } else {
@@ -173,15 +176,119 @@ let API = {
                 console.log(e);
             }
         },
-        answer(quizid, kp, newanswer, fn){
+        answer(quizid, kp, newanswer, lastindex, fn){
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
                 con.query(`
                     INSERT INTO quiz_answer (quizid, kp, answers)
                     VALUES (?, ?, ?)
                     ON DUPLICATE KEY UPDATE
-                    answers = concat(if(LENGTH(answers)=0,'',concat(answers,'|')),?)
-                `, [quizid*1, kp, newanswer, newanswer], function (err, result) {
+                    answers = concat(if(LENGTH(answers)=0,'',concat(answers,'|')),?),
+                    last_index = ?
+                `, [quizid*1, kp, newanswer, newanswer, lastindex], function (err, result) {
+                    if (err) {
+                        console.log('but with some error: ', err);
+                    } else {
+                        console.log('... with some data: ', result);
+                        con.end();
+                        fn(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        completeAnswer(quizid, kp, size, fn){
+            var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
+            var rows = 'SELECT 0 AS digit UNION ALL ';
+            for(i=1;i<=size-1;i++){
+                rows += `SELECT ${i} UNION ALL `;
+            }
+            rows += `SELECT ${size} `;
+
+            var sqlstr = `
+            UPDATE quiz_answer a,
+            (SELECT
+                quizid,kp,
+                TIMESTAMPDIFF(MINUTE, MIN(createdate), MAX(updatedate)) + 
+            TIMESTAMPDIFF(SECOND, MIN(createdate), MAX(updatedate)) / 60.0 AS timetaken,
+            SUM(markah) markah
+            FROM (
+            SELECT quizid,kp,g.qid,answer,correct_answer, createdate, updatedate, if(answer=correct_answer,1,0) markah
+            FROM 
+            (SELECT
+                quizid,
+                kp,
+            CAST(SUBSTRING_INDEX(answer, ',', 1) AS INT) AS qid,
+            SUBSTRING_INDEX(answer, ',', -1) AS answer,
+                createdate,
+                updatedate
+            FROM
+                (SELECT
+                        quizid,
+                        kp,
+                        SUBSTRING_INDEX(SUBSTRING_INDEX(answers, '|', n.digit + 1), '|', -1) AS answer,
+                        createdate,
+                        updatedate
+                    FROM
+                        quiz_answer
+                    JOIN (
+                        ${rows}
+                    ) AS n
+                    ON
+                        LENGTH(answers) - LENGTH(REPLACE(answers, '|', '')) >= n.digit
+                    WHERE
+                        quizid = ? AND kp = ?
+                    ORDER BY
+                        quizid, kp, answer
+                ) m ) g
+                LEFT JOIN 
+                (select qid, correct_answer from quiz_collections where qid IN (
+                    SELECT
+                        SUBSTRING_INDEX(SUBSTRING_INDEX(questions, ',', n.digit + 1), ',', -1) AS answer
+                    FROM
+                        quiz_sets
+                    JOIN (
+                        ${rows}
+                    ) AS n
+                    ON
+                        LENGTH(questions) - LENGTH(REPLACE(questions, ',', '')) >= n.digit
+                    WHERE
+                        id = ?
+                    ) 
+                ) h USING(qid)
+                ) z) b
+                SET
+                a.timetaken = b.timetaken,
+                a.markah = b.markah
+                WHERE
+                a.quizid = b.quizid AND a.kp = b.kp
+            `;
+            try {
+                con.query(sqlstr, [quizid*1, kp, quizid*1], function (err, result) {
+                    if (err) {
+                        console.log('but with some error: ', err);
+                    } else {
+                        console.log('... with some data: ', result);
+                        con.end();
+                        fn(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        myResult(quizid, kp, fn){
+            var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
+            try {
+                con.query(`
+                SELECT a.*,
+                FLOOR((timetaken/60)) AS hours,
+                FLOOR(((timetaken/60) - FLOOR((timetaken/60))) * 60) AS minutes,
+                ROUND(((timetaken/60) - FLOOR((timetaken/60))) * 3600 % 60) AS seconds  
+                FROM quiz_answer a
+                WHERE quizid = ? AND kp = ?
+                `, [quizid*1, kp], function (err, result) {
                     if (err) {
                         console.log('but with some error: ', err);
                     } else {

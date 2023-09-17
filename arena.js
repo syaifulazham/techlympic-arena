@@ -92,10 +92,11 @@ app.get('/quiz/:id', (req, res)=>{
   try{
     var session = req.cookies['arenaId'];
     var id = req.params.id;
+    var kp = session.user.data.ic;
     
     if(id!=='style.css'){
-      api.quiz.quiz(id, quiz=>{
-        console.log('This is my user details=========>>>>>>',session.user)
+      api.quiz.quiz(id, kp, quiz=>{
+        //console.log('This is my user details=========>>>>>>',session.user)
         res.render('quiz.ejs', {user: session.user, quiz:quiz[0]});
       });
     }
@@ -162,12 +163,38 @@ app.post('/api/quiz/questions', (req, res) =>{
 
 app.post('/api/quiz/answer', (req, res) =>{
   var answered = req.body.answered;
-
-  console.log(answered);
+  var session = req.cookies['arenaId'];
   var quizid = answered.quizid;
-  var kp = answered.kp;
+  var kp = session.user.data.ic;
   var answer = answered.answer;
-  api.quiz.answer(quizid, kp, answer, (result)=>{
+  var lastindex = answered.lastindex;
+  
+  api.quiz.answer(quizid, kp, answer, lastindex, (result)=>{
+    res.send(result);
+  })
+});
+
+
+app.post('/api/quiz/complete', (req, res) =>{
+  var answered = req.body.answered;
+  var session = req.cookies['arenaId'];
+  var quizid = answered.quizid;
+  var kp = session.user.data.ic;
+  var size = answered.size;
+  api.quiz.completeAnswer(quizid, kp, size, (result)=>{
+    res.send(result);
+  })
+});
+
+
+app.post('/api/quiz/complete-result', (req, res) =>{
+  var answered = req.body.answered;
+  var session = req.cookies['arenaId'];
+
+  //console.log(answered);
+  var quizid = answered.quizid;
+  var kp = session.user.data.ic;
+  api.quiz.myResult(quizid, kp, (result)=>{
     res.send(result);
   })
 });
