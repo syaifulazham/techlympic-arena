@@ -136,7 +136,7 @@ let API = {
             try {
                 //timestamp(CONVERT_TZ(b.createdate, 'America/New_York', 'Asia/Kuala_Lumpur'))
                 con.query(`
-                    SELECT kp,a.*,markah,timetaken,b.createdate lastupdate, ifnull(b.last_index,-1) last_index 
+                    SELECT kp,a.*,ifnull(b.questions_queue,a.questions) questions_queue,markah,timetaken,b.createdate lastupdate, ifnull(b.last_index,-1) last_index 
                     FROM quiz_sets a 
                     LEFT JOIN ( SELECT * from quiz_answer WHERE kp = ?) b ON a.id = b.quizid
                     where sha(concat(id,'${auth._SECRET_}')) = ?
@@ -163,6 +163,7 @@ let API = {
                 //console.log(`select qid,theme,sub_theme,question,objective_options from quiz_collections where qid in(${series})`)
                 con.query(`
                 select qid,theme,sub_theme,question,objective_options from quiz_collections where qid in(${series})
+                order by field(qid,${series})
               `, series.split(','), function (err, result) {
                     if (err) {
                         console.log('but with some error: ',err);
@@ -177,16 +178,16 @@ let API = {
                 console.log(e);
             }
         },
-        answer(quizid, kp, newanswer, lastindex, fn){
+        answer(quizid, kp, questions_queue, newanswer, lastindex, fn){
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
                 con.query(`
-                    INSERT INTO quiz_answer (quizid, kp, answers)
-                    VALUES (?, ?, ?)
+                    INSERT INTO quiz_answer (quizid, kp, questions_queue, answers)
+                    VALUES (?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE
                     answers = concat(if(LENGTH(answers)=0,'',concat(answers,'|')),?),
                     last_index = ?
-                `, [quizid*1, kp, newanswer, newanswer, lastindex], function (err, result) {
+                `, [quizid*1, kp, questions_queue, newanswer, newanswer, lastindex], function (err, result) {
                     if (err) {
                         console.log('but with some error: ', err);
                     } else {

@@ -88,6 +88,13 @@ app.get('/', (req, res) => {
   //res.render('index');
 });
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 app.get('/quiz/:id', (req, res)=>{
   try{
     var session = req.cookies['arenaId'];
@@ -96,6 +103,11 @@ app.get('/quiz/:id', (req, res)=>{
     
     if(id!=='style.css'){
       api.quiz.quiz(id, kp, quiz=>{
+        if(quiz[0].questions_queue===quiz[0].questions){
+          var arr = quiz[0].questions_queue.split(',');
+          shuffleArray(arr);
+          quiz[0].questions_queue = arr.join(',');
+        }
         //console.log('This is my user details=========>>>>>>',session.user)
         res.render('quiz.ejs', {user: session.user, quiz:quiz[0]});
       });
@@ -168,8 +180,9 @@ app.post('/api/quiz/answer', (req, res) =>{
   var kp = session.user.data.ic;
   var answer = answered.answer;
   var lastindex = answered.lastindex;
+  var queue = answered.queue;
   
-  api.quiz.answer(quizid, kp, answer, lastindex, (result)=>{
+  api.quiz.answer(quizid, kp, queue, answer, lastindex, (result)=>{
     res.send(result);
   })
 });
