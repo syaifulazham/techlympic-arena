@@ -61,6 +61,17 @@
                             },
                             dataType: 'json'
                         });
+                    },
+                    answer(ans, fn){
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/quiz/answer',
+                            data: {answered: ans},
+                            success: function (res) {
+                                fn(res);
+                            },
+                            dataType: 'json'
+                        });
                     }
                 }
             }
@@ -70,6 +81,16 @@
             var closeAndStart=()=>{
                 $('.arahan').addClass('hide');
                 startTimer();
+
+                var ans = {
+                    quizid: <%=quiz.id%>,
+                    kp: '<%=user.data.ic%>',
+                    answer: ''
+                }
+
+                api.quiz.answer(ans, d=>{
+                    console.log(d);
+                })
             }
 
             function startTimer() {
@@ -111,8 +132,20 @@
                     renderQuestion(data);
 
                     $('.next').on('click', ()=>{
-                        n++;
-                        renderQuestion(data);
+                        soalan = data[n];
+
+                        jawapan = [soalan.qid,d3.select('.option-selected')?d3.select('.option-selected').attr('answer'):'X'].join(',');
+
+                        var ans = {
+                            quizid: <%=quiz.id%>,
+                            kp: '<%=user.data.ic%>',
+                            answer: jawapan
+                        }
+
+                        api.quiz.answer(ans, d=>{
+                            n++;
+                            renderQuestion(data);
+                        });
                     })
                     //$('.answer').val(data[0].objective_options);
                 });
@@ -128,10 +161,11 @@
                     $('.question > .text').text(data[n].question);
 
                     var options = data[n].objective_options.split('|');
+                    var abc = 'ABCDEFGHIJKLMNOPQ'.split('');
 
                     $('.answer').find('.option').remove();
                     options.forEach((d,i)=>{
-                        b = $('.answer').append('<div class="option option-' + i + '"><div>' + d + '</div></div>');
+                        b = $('.answer').append('<div class="option option-' + i + '" answer="' + abc[i] + '"><div>' + d + '</div></div>');
                         $('.option-'+i).on('click',()=>{
                             $('.option').removeClass('option-selected');
                             $('.option-'+i).addClass('option-selected');

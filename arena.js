@@ -95,7 +95,8 @@ app.get('/quiz/:id', (req, res)=>{
     
     if(id!=='style.css'){
       api.quiz.quiz(id, quiz=>{
-        res.render('quiz.ejs', {quiz:quiz[0]});
+        console.log('This is my user details=========>>>>>>',session.user)
+        res.render('quiz.ejs', {user: session.user, quiz:quiz[0]});
       });
     }
 
@@ -158,6 +159,18 @@ app.post('/api/quiz/questions', (req, res) =>{
   })
 });
 
+
+app.post('/api/quiz/answer', (req, res) =>{
+  var answered = req.body.answered;
+
+  console.log(answered);
+  var quizid = answered.quizid;
+  var kp = answered.kp;
+  var answer = answered.answer;
+  api.quiz.answer(quizid, kp, answer, (result)=>{
+    res.send(result);
+  })
+});
 
 app.get('/logout', function (req, res, next) {
   res.clearCookie('arenaId');

@@ -156,6 +156,7 @@ let API = {
                 
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try {
+                //console.log(`select qid,theme,sub_theme,question,objective_options from quiz_collections where qid in(${series})`)
                 con.query(`
                 select qid,theme,sub_theme,question,objective_options from quiz_collections where qid in(${series})
               `, series.split(','), function (err, result) {
@@ -165,6 +166,27 @@ let API = {
                         console.log('... with some data: ',result);
                         con.end();
                         
+                        fn(result);
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        answer(quizid, kp, newanswer, fn){
+            var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
+            try {
+                con.query(`
+                    INSERT INTO quiz_answer (quizid, kp, answers)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE
+                    answers = concat(if(LENGTH(answers)=0,'',concat(answers,'|')),?)
+                `, [quizid*1, kp, newanswer, newanswer], function (err, result) {
+                    if (err) {
+                        console.log('but with some error: ', err);
+                    } else {
+                        console.log('... with some data: ', result);
+                        con.end();
                         fn(result);
                     }
                 });
