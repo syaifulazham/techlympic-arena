@@ -75,7 +75,7 @@
             <div class="book aurora shadow flex-column text-white">
                 ARENA DALAM TALIAN | MALAYSIA TECHLYMPICS
             </div>
-            <%competitions.filter(a=>a.prog_desc==='online').forEach(d=>{%>
+            <%competitions.filter(a=>(a.prog_code==='5.3K' || a.prog_code==='5.3R' || a.prog_code==='5.3B' || a.prog_code==='5.4R')).forEach(d=>{%>
                 <div class="book shadow flex-column book-<%=d.prog_code.replace('.','')%>">
                     <div class="book-header flex-row" style="background-color:<%=d.color%>;">
                         <%=d.theme%> | <%=d.prog_name%>
