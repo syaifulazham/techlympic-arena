@@ -155,7 +155,7 @@
 
 </script>
 
-<%competitions.filter(a=>a.prog_desc==='online').forEach(d=>{%>
+<%competitions.filter(a=>(a.prog_code==='5.3K' || a.prog_code==='5.3R' || a.prog_code==='5.3B' || a.prog_code==='5.4R')).forEach(d=>{%>
     <%if(d.prog_code==='5.3K' || d.prog_code==='5.3R' || d.prog_code==='5.3B'){%>
         <script>
             var loadQuiz = (peringkat, fn)=>{
