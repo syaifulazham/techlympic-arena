@@ -159,8 +159,11 @@ app.post('/api/user/login', (req, res)=>{
 });
 
 app.post('/api/quiz/list', (req, res) =>{
+  var session = req.cookies['arenaId'];
+  var me = session.user.data;
+  console.log('I am peserta quiz: ', me);
   var p = req.body.peringkat;
-  api.quiz.list(p, (result)=>{
+  api.quiz.list(p,me.grade, (result)=>{
     res.send(result);
   })
 });
