@@ -117,7 +117,7 @@ let API = {
             try {
                 con.query(`
                 select sha(concat(id,'${auth._SECRET_}')) idx,a.* from quiz_sets a where target_group = ? and if(target_grade<>'',target_grade=?,true) and ispublished = 1 order by updatedate
-            `, p,function (err, result) {
+            `, [p,g],function (err, result) {
                     if (err) {
                         console.log('but with some error: ',err);
                     } else {
