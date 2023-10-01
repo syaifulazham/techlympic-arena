@@ -186,7 +186,7 @@
                     $('.qid').text(n+1);
                     $('.theme').text(data[n].theme);
                     $('.sub-theme').text(data[n].sub_theme);
-                    $('.question > .text').text(data[n].question);
+                    $('.question > .text').html(data[n].question);
 
                     var options = data[n].objective_options.split('|');
                     var abc = 'ABCDEFGHIJKLMNOPQ'.split('');

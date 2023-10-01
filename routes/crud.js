@@ -185,8 +185,8 @@ let API = {
                     INSERT INTO quiz_answer (quizid, kp, questions_queue, answers)
                     VALUES (?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE
-                    answers = concat(if(LENGTH(answers)=0,'',concat(answers,'|')),?),
-                    last_index = ?
+                    answers = if(timetaken is null,concat(if(LENGTH(answers)=0,'',concat(answers,'|')),?),answers),
+                    last_index = if(timetaken is null,?,last_index)
                 `, [quizid*1, kp, questions_queue, newanswer, newanswer, lastindex], function (err, result) {
                     if (err) {
                         console.log('but with some error: ', err);
@@ -264,7 +264,7 @@ let API = {
                 a.timetaken = b.timetaken,
                 a.markah = b.markah
                 WHERE
-                a.quizid = b.quizid AND a.kp = b.kp
+                a.quizid = b.quizid AND a.kp = b.kp and a.timetaken is null
             `;
             try {
                 con.query(sqlstr, [quizid*1, kp, quizid*1], function (err, result) {
