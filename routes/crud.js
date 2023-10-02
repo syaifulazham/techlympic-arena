@@ -12,11 +12,11 @@ let API = {
             try{
                 //"SELECT * from peserta WHERE kp = ? and peserta_password = AES_ENCRYPT(kp,CONCAT(?,?))
                 con.query(`SELECT b.kodsekolah, b.namasekolah, b.peringkat, concat(alamat1,' ',alamat2,', ', poskod,' ', bandar,', ',negeri) alamat,
-                if(ucase(darjah_tingkatan) REGEXP '1|SATU|TINGKATAN SA' OR LEFT(kp,2)='10','T1',
-		  if(ucase(darjah_tingkatan) REGEXP '2|DUA|TINGKATAN DU' OR LEFT(kp,2)='09','T2',
-		  if(ucase(darjah_tingkatan) REGEXP '3|TIGA|TINGKATAN TI' OR LEFT(kp,2)='08','T3',
-		  if(ucase(darjah_tingkatan) REGEXP '4|EMPAT|TINGKATAN EM' OR LEFT(kp,2)='07','T4',
-		  if(ucase(darjah_tingkatan) REGEXP '5|LIMA|TINGKATAN LI' OR LEFT(kp,2)='06','T5',''))))) grade,
+                if(ucase(darjah_tingkatan) REGEXP '1|SATU|TINGKATAN SA' OR LEFT(kp,2)='10',if(b.peringkat='Menengah','T1','D1'),
+                if(ucase(darjah_tingkatan) REGEXP '2|DUA|TINGKATAN DU' OR LEFT(kp,2)='09',if(b.peringkat='Menengah','T2','D2'),
+                if(ucase(darjah_tingkatan) REGEXP '3|TIGA|TINGKATAN TI' OR LEFT(kp,2)='08',if(b.peringkat='Menengah','T3','D3'),
+                if(ucase(darjah_tingkatan) REGEXP '4|EMPAT|TINGKATAN EM' OR LEFT(kp,2)='07',if(b.peringkat='Menengah','T4','D4'),
+                if(ucase(darjah_tingkatan) REGEXP '5|LIMA|TINGKATAN LI' OR LEFT(kp,2)='06',if(b.peringkat='Menengah','T5','D5'),'D6'))))) grade,
                 a.* from peserta a left join user b using(usr_email) WHERE kp = ? and peserta_password = AES_ENCRYPT(?,CONCAT(kp,?))`,[uid, pass, auth._SECRET_], 
                 function (err, result) {
                     console.log('result ====> ', result);
