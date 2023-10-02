@@ -213,8 +213,7 @@ let API = {
             UPDATE quiz_answer a,
             (SELECT
                 quizid,kp,
-                TIMESTAMPDIFF(MINUTE, MIN(createdate), MAX(updatedate)) + 
-            TIMESTAMPDIFF(SECOND, MIN(createdate), MAX(updatedate)) / 60.0 AS timetaken,
+                TIMESTAMPDIFF(SECOND, createdate, updatedate) / 60.0 AS timetaken,
             SUM(markah) markah
             FROM (
             SELECT quizid,kp,g.qid,answer,correct_answer, createdate, updatedate, if(answer=correct_answer,1,0) markah
