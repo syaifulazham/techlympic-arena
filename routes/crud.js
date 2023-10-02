@@ -11,7 +11,8 @@ let API = {
             var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
             try{
                 //"SELECT * from peserta WHERE kp = ? and peserta_password = AES_ENCRYPT(kp,CONCAT(?,?))
-                con.query(`SELECT b.kodsekolah, b.namasekolah, b.peringkat, concat(alamat1,' ',alamat2,', ', poskod,' ', bandar,', ',negeri) alamat,
+                con.query(`SELECT b.kodsekolah, b.namasekolah, if(YEAR(tarikh_lahir)>=2005 and YEAR(tarikh_lahir)<=2010,'Menengah',
+                if(YEAR(tarikh_lahir)>=2011,'Rendah','Belia')) peringkat, concat(alamat1,' ',alamat2,', ', poskod,' ', bandar,', ',negeri) alamat,
                 if(ucase(darjah_tingkatan) REGEXP '1|SATU|TINGKATAN SA' OR LEFT(kp,2)='10',if(b.peringkat='Menengah' OR LEFT(kp,2)='10','T1','D1'),
                 if(ucase(darjah_tingkatan) REGEXP '2|DUA|TINGKATAN DU' OR LEFT(kp,2)='09',if(b.peringkat='Menengah' OR LEFT(kp,2)='09','T2','D2'),
                 if(ucase(darjah_tingkatan) REGEXP '3|TIGA|TINGKATAN TI' OR LEFT(kp,2)='08',if(b.peringkat='Menengah' OR LEFT(kp,2)='08','T3','D3'),
