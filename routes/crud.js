@@ -13,11 +13,17 @@ let API = {
                 //"SELECT * from peserta WHERE kp = ? and peserta_password = AES_ENCRYPT(kp,CONCAT(?,?))
                 con.query(`SELECT b.kodsekolah, b.namasekolah, if(YEAR(tarikh_lahir)>=2005 and YEAR(tarikh_lahir)<=2010,'Menengah',
                 if(YEAR(tarikh_lahir)>=2011,'Rendah','Belia')) peringkat, concat(alamat1,' ',alamat2,', ', poskod,' ', bandar,', ',negeri) alamat,
-                if(LEFT(kp,2)='10',if(b.peringkat='Menengah' OR LEFT(kp,2)='10','T1','D1'),
-                if(LEFT(kp,2)='09',if(b.peringkat='Menengah' OR LEFT(kp,2)='09','T2','D2'),
-                if(LEFT(kp,2)='08',if(b.peringkat='Menengah' OR LEFT(kp,2)='08','T3','D3'),
-                if(LEFT(kp,2)='07',if(b.peringkat='Menengah' OR LEFT(kp,2)='07','T4','D4'),
-                if(LEFT(kp,2)='06',if(b.peringkat='Menengah' OR LEFT(kp,2)='06','T5','D5'),'D6'))))) grade,
+                if(YEAR(tarikh_lahir)=2016,'D1',
+					 if(YEAR(tarikh_lahir)=2015,'D2',
+					 if(YEAR(tarikh_lahir)=2014,'D3',
+					 if(YEAR(tarikh_lahir)=2013,'D4',
+					 if(YEAR(tarikh_lahir)=2012,'D5',
+					 if(YEAR(tarikh_lahir)=2011,'D6',
+					 if(YEAR(tarikh_lahir)=2010,'T1',
+					 if(YEAR(tarikh_lahir)=2009,'T2',
+					 if(YEAR(tarikh_lahir)=2008,'T3',
+					 if(YEAR(tarikh_lahir)=2007,'T4',
+					 if(YEAR(tarikh_lahir)=2006,'T5',''))))))))))) grade,
                 a.* from peserta a left join user b using(usr_email) WHERE kp = ? and peserta_password = AES_ENCRYPT(?,CONCAT(kp,?))`,[uid, pass, auth._SECRET_], 
                 function (err, result) {
                     //console.log('result ====> ', result);
