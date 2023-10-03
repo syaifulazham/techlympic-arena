@@ -20,8 +20,9 @@ let API = {
                 if(LEFT(kp,2)='06',if(b.peringkat='Menengah' OR LEFT(kp,2)='06','T5','D5'),'D6'))))) grade,
                 a.* from peserta a left join user b using(usr_email) WHERE kp = ? and peserta_password = AES_ENCRYPT(?,CONCAT(kp,?))`,[uid, pass, auth._SECRET_], 
                 function (err, result) {
-                    console.log('result ====> ', result);
-                    if(result !== undefined){
+                    //console.log('result ====> ', result);
+                    if(result !== undefined && result.length>0){
+                        
                         var user = {
                             name: result[0].nama,
                             ic: result[0].kp,
