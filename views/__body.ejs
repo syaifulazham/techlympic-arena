@@ -43,11 +43,13 @@
                     ];
 
                     var getLogo = (th)=>{
-                        //console.log('SKAKJHKJAHKHAKJS: ',th,theme.filter(a=>a[0]==th));
+                        console.log('SKAKJHKJAHKHAKJS: ',th,theme.filter(a=>a[0]==th));
                         return theme.filter(a=>a[0]==th)[0][1];
                     }
                     %>
-                    <%competitions.filter(a=>a.peringkat==='Negeri').forEach(d=>{%>
+                    <%
+                    console.log('this is competitions.......', competitions);
+                    competitions.filter(a=>a.peringkat==='Negeri' && a.theme !== null).forEach(d=>{%>
                         <div class="menu-item flex-row menu-negeri">
                             <img src="./img/picto-<%=getLogo(d.theme)%>.png" alt="">
                             <%=d.prog_name%>
@@ -61,7 +63,7 @@
 
                 <div class="menu-list flex-column">
                     
-                    <%competitions.filter(a=>a.peringkat==='Sekolah').forEach(d=>{%>
+                    <%competitions.filter(a=>a.peringkat==='Sekolah' && a.theme !== null).forEach(d=>{%>
                         <div class="menu-item flex-row menu-sekolah">
                             <img src="./img/picto-<%=getLogo(d.theme)%>.png" alt="">
                             <%=d.prog_name%>

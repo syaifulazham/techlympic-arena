@@ -111,6 +111,7 @@ let API = {
 
                     con.end();
 
+                    console.log('this is the competitions: ',result);
                     fn(result);
                 });
             }catch(err){
