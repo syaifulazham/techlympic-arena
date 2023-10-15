@@ -53,6 +53,29 @@ async function isRegisteredMathwhiz(kp, class_code) {
   }
 }
 
+async function registerStudents(requestData) {
+ 
+  // Define the API URL and request data
+  const apiUrl = `${url}/api/v11/partner/students/`;
+ 
+  console.log(requestData);
+
+  try {
+    // Make the POST request
+    const response = await axios.post(apiUrl, requestData, { headers });
+
+    // Handle the response data here
+    console.log('Response from API:', response.data);
+    
+    // You can return the response data or perform further processing here
+    return response.data;
+  } catch (error) {
+    // Handle any errors that occurred during the request
+    console.error('Error calling API:', error.message);
+    return { exists: false }; // You can choose to throw the error or handle it differently
+  }
+}
+
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -142,14 +165,45 @@ app.get('/math-whiz', (req, res)=>{
   try{
     var session = req.cookies['arenaId'];
     var uid = session.user.data.ic;
-    console.log('WELL.. THIS is my session=======>>>>>',session);
+    var ccode = [session.user.data.kodsekolah,session.user.data.grade].join('-');
+    console.log('WELL.. THIS is my session=======>>>>>',ccode);
     if(uid!=='style.css'){
-      requestToken(uid).then(data=>{
-        //console.log('THE TOKEN=========>>>',data.token);
-        res.render('math.ejs', { user: session.user, token:data.token });
+      console.log('isRegisteredMathwhiz(uid, ccode)?===>',uid, ccode);
+      isRegisteredMathwhiz(uid, ccode).then(m=>{
+        console.log('who am I?===>',m);
+        requestToken(uid).then(data=>{
+          //console.log('THE TOKEN=========>>>',data.token);
+          res.render('math.ejs', { user: session.user, token:data.token });
+          
+        }).catch(err=>{
+          console.log('ERROR /math-whiz');
+        });
+
+        //res.render('math.ejs', { user: session.user, token:data.token });
       }).catch(err=>{
-        console.log(err);
-      })
+        console.log('NOT yet registered');
+        var newUser = {
+          username: session.user.data.ic,
+          first_name: session.user.data.name,
+          last_name: 'n/a',
+          class_codes: [ccode],
+          email: '',
+          phone_number: ''
+        }
+        registerStudents(newUser).then(reg=>{
+          requestToken(uid).then(token=>{
+            //console.log('THE TOKEN=========>>>',data.token);
+            res.render('math.ejs', { user: session.user, token:token.token });
+            
+          }).catch(err=>{
+            console.log('ERROR /math-whiz (get token)');
+          });
+        }).catch(errx=>{
+          //return {error: '400'}
+          console.log('ERROR /math-whiz (register new user)');
+        })
+      });
+     
     }
 
   }catch(err){
