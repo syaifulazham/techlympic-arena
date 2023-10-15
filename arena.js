@@ -34,6 +34,25 @@ async function requestToken(kp) {
   }
 }
 
+async function isRegisteredMathwhiz(kp, class_code) {
+  // Define the API URL and request data
+  const apiUrl = `${url}/api/v11/partner/student/${kp}/check-existence-in-class/`;
+  var requestData =  {
+    class_code: class_code
+  }
+
+  try {
+    // Make the POST request
+    const response = await axios.post(apiUrl, requestData, { headers });
+
+    return response.data;
+  } catch (error) {
+    // Handle any errors that occurred during the request
+    console.error('Error calling API:', error.message);
+    throw error; // You can choose to throw the error or handle it differently
+  }
+}
+
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -123,6 +142,7 @@ app.get('/math-whiz', (req, res)=>{
   try{
     var session = req.cookies['arenaId'];
     var uid = session.user.data.ic;
+    console.log('WELL.. THIS is my session=======>>>>>',session);
     if(uid!=='style.css'){
       requestToken(uid).then(data=>{
         //console.log('THE TOKEN=========>>>',data.token);
