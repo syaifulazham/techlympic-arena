@@ -18,6 +18,11 @@ const headers = {
   'jwt-token': auth._CEREBRY_
 };
 
+function removeWhitespace(inputString) {
+  // Use a regular expression to match and replace whitespace characters with an empty string
+  return inputString.replace(/\s+/g, '');
+}
+
 async function requestToken(kp) {
   // Define the API URL and request data
   const apiUrl = `${url}/api/v11/partner/user/${kp}/token/`;
@@ -29,7 +34,7 @@ async function requestToken(kp) {
     return response.data;
   } catch (error) {
     // Handle any errors that occurred during the request
-    console.error('Error calling API:', error.message);
+    console.error('Error calling API (requestToken):', error.message);
     throw error; // You can choose to throw the error or handle it differently
   }
 }
@@ -48,7 +53,7 @@ async function isRegisteredMathwhiz(kp, class_code) {
     return response.data;
   } catch (error) {
     // Handle any errors that occurred during the request
-    console.error('Error calling API:', error.message);
+    console.error('Error calling API (requestToken):', error.message);
     throw error; // You can choose to throw the error or handle it differently
   }
 }
@@ -71,7 +76,7 @@ async function registerStudents(requestData) {
     return response.data;
   } catch (error) {
     // Handle any errors that occurred during the request
-    console.error('Error calling API:', error.message);
+    console.error('Error calling API (registerStudents):', error.message);
     return { exists: false }; // You can choose to throw the error or handle it differently
   }
 }
@@ -169,6 +174,7 @@ app.get('/math-whiz', (req, res)=>{
     console.log('WELL.. THIS is my session=======>>>>>',ccode);
     if(uid!=='style.css'){
       console.log('isRegisteredMathwhiz(uid, ccode)?===>',uid, ccode);
+      ccode = removeWhitespace(ccode);
       isRegisteredMathwhiz(uid, ccode).then(m=>{
         console.log('who am I?===>',m);
         requestToken(uid).then(data=>{
