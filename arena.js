@@ -223,6 +223,7 @@ app.post('/api/user/login', (req, res)=>{
     pwd = req.body.pwd;
     api.user.login(uid, pwd, (user)=>{
       if(user.authorized){
+        user.data.kodsekolah = removeWhitespace(user.data.kodsekolah);
         res.cookie('arenaId', {user:user});
         console.log('Will be rendered to index===>')
         res.send({authorized:true});
