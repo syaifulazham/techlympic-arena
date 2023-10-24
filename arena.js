@@ -245,6 +245,9 @@ app.get('/math-whiz-2', (req, res)=>{
   try{
     var session = req.cookies['arenaId'];
     var uid = session.user.data.ic;
+    if(session.user.data.kodsekolah===''){
+      session.user.data.kodsekolah = 'EZC0001'
+    }
     var ccode = [session.user.data.kodsekolah,session.user.data.grade,'2'].join('-');
     console.log('WELL.. THIS is my session=======>>>>>',ccode);
     if(uid!=='style.css'){
