@@ -212,8 +212,16 @@
             var data =[
                 {
                     datepublish:'',
-                    title:'Klik ke antara muka MathWhiz'
-                }
+                    title:'Klik ke antara muka MathWhiz',
+                    link: '/math-whiz'
+                },
+                <%if(d.rank_in_grade <= 250){%>
+                {
+                    datepublish:'',
+                    title:'MathWhiz Peringkat ke-2 (200 Terbaik)',
+                    link: '/math-whiz-2'
+                },
+                <%}%>
             ]
                     var sel = `.book-<%=d.prog_code.replace('.','')%> .book-container`;
                     console.log('SEL=======>',sel);
@@ -227,7 +235,7 @@
 
                         o.on('click', (e, d)=>{
                             //loadQuestions(d);
-                            redirectToNewTab('/math-whiz');
+                            redirectToNewTab(d.link);
                         });
                     });
         </script>

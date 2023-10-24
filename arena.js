@@ -81,6 +81,30 @@ async function registerStudents(requestData) {
   }
 }
 
+
+async function joinClass(kp,requestData) {
+ 
+  // Define the API URL and request data
+  const apiUrl = `${url}/api/v11/partner/student/${kp}/class-addition/`;
+ 
+  console.log(requestData);
+
+  try {
+    // Make the POST request
+    const response = await axios.post(apiUrl, requestData, { headers });
+
+    // Handle the response data here
+    console.log('Response from API:', response.data);
+    
+    // You can return the response data or perform further processing here
+    return response.data;
+  } catch (error) {
+    // Handle any errors that occurred during the request
+    console.error('Error calling API (joinClass):', error.message);
+    return { exists: false }; // You can choose to throw the error or handle it differently
+  }
+}
+
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -184,6 +208,76 @@ app.get('/math-whiz', (req, res)=>{
         }).catch(err=>{
           console.log('ERROR /math-whiz');
         });
+
+        //res.render('math.ejs', { user: session.user, token:data.token });
+      }).catch(err=>{
+        console.log('NOT yet registered');
+        var newUser = {
+          username: session.user.data.ic,
+          first_name: session.user.data.name,
+          last_name: 'n/a',
+          class_codes: [ccode],
+          email: '',
+          phone_number: ''
+        }
+        registerStudents(newUser).then(reg=>{
+          requestToken(uid).then(token=>{
+            //console.log('THE TOKEN=========>>>',data.token);
+            res.render('math.ejs', { user: session.user, token:token.token });
+            
+          }).catch(err=>{
+            console.log('ERROR /math-whiz (get token)');
+          });
+        }).catch(errx=>{
+          //return {error: '400'}
+          console.log('ERROR /math-whiz (register new user)');
+        })
+      });
+     
+    }
+
+  }catch(err){
+    console.log(err);
+  }
+});
+
+app.get('/math-whiz-2', (req, res)=>{
+  try{
+    var session = req.cookies['arenaId'];
+    var uid = session.user.data.ic;
+    var ccode = [session.user.data.kodsekolah,session.user.data.grade,'2'].join('-');
+    console.log('WELL.. THIS is my session=======>>>>>',ccode);
+    if(uid!=='style.css'){
+      console.log('isRegisteredMathwhiz(uid, ccode)?===>',uid, ccode);
+      ccode = removeWhitespace(ccode);
+      isRegisteredMathwhiz(uid, ccode).then(m=>{
+        console.log('who am I?===>',m);
+        if(m.exists){
+          requestToken(uid).then(data=>{
+            //console.log('THE TOKEN=========>>>',data.token);
+            res.render('math.ejs', { user: session.user, token:data.token });
+            
+          }).catch(err=>{
+            console.log('ERROR /math-whiz');
+          });
+        }else{
+          var newClass = {
+            class_code: ccode
+          }
+          joinClass(session.user.data.ic, newClass).then(reg=>{
+            requestToken(uid).then(token=>{
+              //console.log('THE TOKEN=========>>>',data.token);
+              res.render('math.ejs', { user: session.user, token:token.token });
+              
+            }).catch(err=>{
+              console.log('ERROR /math-whiz-2 (get token)');
+            });
+          }).catch(errx=>{
+            //return {error: '400'}
+            console.log('ERROR /math-whiz-2 (register new user)');
+          })
+        }
+        
 
         //res.render('math.ejs', { user: session.user, token:data.token });
       }).catch(err=>{

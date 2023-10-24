@@ -70,7 +70,7 @@ let API = {
                 var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
 
                 var sqlstr = `
-                SELECT a.*,prog_code,theme, color, target_group, prog_desc
+                SELECT a.*,prog_code,theme, color, target_group, prog_desc, ifnull(c.rank_in_grade,0) rank_in_grade
                 FROM (
                 SELECT * FROM(
                 SELECT kp, SUBSTRING_INDEX(SUBSTRING_INDEX(program, '|', n), '|', -1) AS prog_name, 'Sekolah' peringkat
@@ -100,6 +100,7 @@ let API = {
 
                 ) a
                 LEFT JOIN program b USING(prog_name)
+                LEFT JOIN mathwhiz_results c ON a.kp = c.username AND b.prog_code = '5.4R'
                 `;
 
                 con.query(sqlstr, [uid,uid], (err, result)=>{
