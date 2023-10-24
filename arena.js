@@ -101,7 +101,7 @@ async function joinClass(kp,requestData) {
   } catch (error) {
     // Handle any errors that occurred during the request
     console.error('Error calling API (joinClass):', error.message);
-    return { exists: false }; // You can choose to throw the error or handle it differently
+    return { success: false }; // You can choose to throw the error or handle it differently
   }
 }
 
@@ -137,6 +137,13 @@ app.get('/', (req, res) => {
     if(session.user.authorized){
       var uid = session.user.data.ic;
       api.user.competitions(uid, (comp)=>{
+        var alt = comp.filter(d=>{d.rank_in_grade > 0});
+        if(alt.length>0){
+          session.user.data.kodsekolah_alt = alt[0].kodsekolah_alt;
+        }else{
+          session.user.data.kodsekolah_alt = '';
+        }
+        
         requestToken(uid).then(data=>{
           //console.log('THE TOKEN=========>>>',data.token);
           res.render('index.ejs', { user: session.user, competitions:comp, page: '__body.ejs',token:data.token });
@@ -245,10 +252,11 @@ app.get('/math-whiz-2', (req, res)=>{
   try{
     var session = req.cookies['arenaId'];
     var uid = session.user.data.ic;
-    if(session.user.data.kodsekolah===''){
-      session.user.data.kodsekolah = 'EZC0001'
-    }
-    var ccode = [session.user.data.kodsekolah,session.user.data.grade,'2'].join('-');
+    //if(session.user.data.kodsekolah===''){
+    //  session.user.data.kodsekolah = 'EZC0001'
+    //}
+    console.log('mathwhiz-----2',session.user.data);
+    var ccode = [session.user.data.kodsekolah_alt,session.user.data.grade,'2'].join('-');
     console.log('WELL.. THIS is my session=======>>>>>',ccode);
     if(uid!=='style.css'){
       console.log('isRegisteredMathwhiz(uid, ccode)?===>',uid, ccode);

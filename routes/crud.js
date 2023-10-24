@@ -24,7 +24,9 @@ let API = {
 					 if(YEAR(tarikh_lahir)=2008,'T3',
 					 if(YEAR(tarikh_lahir)=2007,'T4',
 					 if(YEAR(tarikh_lahir)=2006,'T5',''))))))))))) grade,
-                a.* from peserta a left join user b using(usr_email) WHERE kp = ? and peserta_password = AES_ENCRYPT(?,CONCAT(kp,?))`,[uid, pass, auth._SECRET_], 
+                a.*, ifnull(c.kodsekolah,'') kodsekolah_alt from peserta a left join user b using(usr_email) 
+                LEFT JOIN mathwhiz_results c ON a.kp = c.username
+                WHERE kp = ? and peserta_password = AES_ENCRYPT(?,CONCAT(kp,?))`,[uid, pass, auth._SECRET_], 
                 function (err, result) {
                     //console.log('result ====> ', result);
                     if(result !== undefined && result.length>0){
@@ -33,6 +35,7 @@ let API = {
                             name: result[0].nama,
                             ic: result[0].kp,
                             kodsekolah: result[0].kodsekolah,
+                            kodsekolah_alt: result[0].kodsekolah_alt,
                             namasekolah: result[0].namasekolah,
                             darjah_tingkatan: result[0].darjah_tingkatan,
                             grade: result[0].grade,
@@ -70,7 +73,7 @@ let API = {
                 var con = mysql.createConnection(auth.auth()[__DATA__SCHEMA__]);
 
                 var sqlstr = `
-                SELECT a.*,prog_code,theme, color, target_group, prog_desc, ifnull(c.rank_in_grade,0) rank_in_grade
+                SELECT a.*,prog_code,theme, color, target_group, prog_desc, ifnull(c.rank_in_grade,0) rank_in_grade, ifnull(c.kodsekolah,'') kodsekolah_alt
                 FROM (
                 SELECT * FROM(
                 SELECT kp, SUBSTRING_INDEX(SUBSTRING_INDEX(program, '|', n), '|', -1) AS prog_name, 'Sekolah' peringkat
