@@ -266,7 +266,7 @@ app.get('/math-whiz-2', (req, res)=>{
         if(m.exists){
           requestToken(uid).then(data=>{
             //console.log('THE TOKEN=========>>>',data.token);
-            res.render('math.ejs', { user: session.user, token:data.token });
+            res.render('math-2.ejs', { user: session.user, token:data.token });
             
           }).catch(err=>{
             console.log('ERROR /math-whiz');

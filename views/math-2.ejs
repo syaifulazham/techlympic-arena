@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            Techlympics 2023 | 5.4R MathWhiz
+        </title>
+        <style>
+            #cerebry-practice {
+                position: absolute;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 97vw;
+                height: 95vh;
+                margin-left: 1vw;
+                margin-bottom: 1vh;
+                border: 1px solid #999;
+                border-radius: 11px;
+            }
+        
+            #app {
+                margin: 30px;
+                border: 1px solid #999;
+                border-radius: 11px;
+            }
+
+            body{
+                background-color: #00b1b0;
+            }
+        </style>
+        
+    </head>
+
+    <body>
+        <iframe id = "cerebry-practice" src = "https://competition.cerebry.co/?auth_tok=<%=token%>&class_code=<%=user.data.kodsekolah_alt%>-<%=user.data.grade%>-2"></iframe>
+    </body>
+</html>
