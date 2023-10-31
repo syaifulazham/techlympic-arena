@@ -278,7 +278,7 @@ app.get('/math-whiz-2', (req, res)=>{
           joinClass(session.user.data.ic, newClass).then(reg=>{
             requestToken(uid).then(token=>{
               //console.log('THE TOKEN=========>>>',data.token);
-              res.render('math.ejs', { user: session.user, token:token.token });
+              res.render('math-2.ejs', { user: session.user, token:token.token });
               
             }).catch(err=>{
               console.log('ERROR /math-whiz-2 (get token)');
@@ -293,18 +293,13 @@ app.get('/math-whiz-2', (req, res)=>{
         //res.render('math.ejs', { user: session.user, token:data.token });
       }).catch(err=>{
         console.log('NOT yet registered');
-        var newUser = {
-          username: session.user.data.ic,
-          first_name: session.user.data.name,
-          last_name: 'n/a',
-          class_codes: [ccode],
-          email: '',
-          phone_number: ''
+        var newClass = {
+          class_code: ccode
         }
-        registerStudents(newUser).then(reg=>{
+        joinClass(session.user.data.ic, newClass).then(reg=>{
           requestToken(uid).then(token=>{
             //console.log('THE TOKEN=========>>>',data.token);
-            res.render('math.ejs', { user: session.user, token:token.token });
+            res.render('math-2.ejs', { user: session.user, token:token.token });
             
           }).catch(err=>{
             console.log('ERROR /math-whiz (get token)');
