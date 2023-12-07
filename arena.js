@@ -1,18 +1,26 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const { PDFDocument, rgb } = require('pdf-lib');
+const fontkit = require('fontkit'); // Import the fontkit library
+const fs = require('fs').promises;
 const bodyParser = require('body-parser');
 
+const { promisify } = require('util');
+const readFileAsync = promisify(fs.readFile);
 const app = express();
 const path = require('path');
 
 const axios = require('axios');
 
-const auth = require("./routes/auth")
+const auth = require("./routes/auth");
+const cert = require("./routes/cert");
 const api = require("./routes/crud");
 
 let __DATA__SCHEMA__ = 'techlympic';
 
+
 const url = 'https://staging.sparkbackend.cerebry.co';
+
 const headers = {
   'Content-Type': 'application/json',
   'jwt-token': auth._CEREBRY_
@@ -113,6 +121,9 @@ app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store');
   next();
 });
+
+
+//app.use(bodyParser.raw({ type: 'application/pdf' }));
 
 //set cookies
 app.use(cookieParser());
@@ -318,6 +329,7 @@ app.get('/math-whiz-2', (req, res)=>{
 });
 
 app.post('/api/user/login', (req, res)=>{
+  console.log('I am logging in...');
   try{
     uid = req.body.uid;
     pwd = req.body.pwd;
@@ -399,6 +411,46 @@ app.post('/api/quiz/complete-result', (req, res) =>{
 app.get('/logout', function (req, res, next) {
   res.clearCookie('arenaId');
   res.redirect('/');
+});
+
+
+// E-Cert
+app.post('/api/peserta/download-sijil', async (req, res)=>{
+  try{
+    var session = req.cookies['arenaId'];
+    var data = session.user.data;
+    var pertandingan = req.body.pertandingan;
+
+    //data.programs = req.program.split('|');
+
+    //const sijil_ = await API.user.getUser(uid);
+    console.log('=====DATA=====',req.body.pertandingan,data);
+    const sijil = [];
+    sijil.push({
+      nama: data.name,
+      sekolah: data.namasekolah,
+      pertandingan: pertandingan,
+      peringkat: 'PERINGKAT SEKOLAH|',
+      tempat: '',
+      tarikh: '',
+      kp: '',
+      kodsekolah: data.kodsekolah,
+      siri: '2023-' + pertandingan.replace(':','').split(' ')[0].replace('.','') + '-' + data.ic.replace(/\D/g, '').slice(-6),
+    });
+    
+    const mergedPdfBytes = await cert.mergePdfs(sijil);
+    //const mergedPdfBytes = await createSijil(sijil[0]);
+    //const pdfDoc = await PDFDocument.load(mergedPdfBytes);
+    const fname = sijil[0].kodsekolah + '-' + sijil[0].siri;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${fname}.pdf`);
+   
+    res.send({pdf:`${fname}.pdf`}); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 // Start the server
