@@ -430,10 +430,10 @@ app.post('/api/peserta/download-sijil', async (req, res)=>{
       nama: data.name,
       sekolah: data.namasekolah,
       pertandingan: pertandingan,
-      peringkat: 'PERINGKAT SEKOLAH|',
+      peringkat: 'MALAYSIA TECHLYMPICS 2023|',
       tempat: '',
       tarikh: '',
-      kp: '',
+      kp: data.ic.replace(/\D/g, ''),
       kodsekolah: data.kodsekolah,
       siri: '2023-' + pertandingan.replace(':','').split(' ')[0].replace('.','') + '-' + data.ic.replace(/\D/g, '').slice(-6),
     });
